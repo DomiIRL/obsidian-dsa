@@ -1,4 +1,5 @@
 import {Notice} from "obsidian";
+import {unknownhero} from "../assets/unknownhero.png";
 
 export interface AttributeData {
 	id: string;
@@ -61,7 +62,7 @@ const Races: Race[] = [
 
 export class DataSheet {
 	name: string = "Unknown Hero";
-	avatar: string = "";
+	avatar: string = unknownhero;
 	ap: {
 		total: number;
 	} = {
