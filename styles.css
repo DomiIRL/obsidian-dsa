@@ -137,6 +137,7 @@
 	flex-direction: row;
 	gap: 20px;
 	justify-content: center;
+	height: 100%;
 }
 
 .dsa-hero-overview .hero-card {
@@ -165,6 +166,7 @@
     flex-direction: column;
 	justify-content: flex-start;
 	gap: 40px;
+	padding-bottom: 40px;
 }
 
 .dsa-hero-overview .name {

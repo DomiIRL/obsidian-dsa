@@ -51,23 +51,6 @@ export class HeroOverview extends DSAView {
 
 		const dataSheet = await this.getDataSheet();
 
-		/*const manageButtons = overview.createDiv({cls: "manage-buttons"});*/
-
-/*		const deleteButton = manageButtons.createEl("button", { text: "Löschen", cls: "button delete" });
-		deleteButton.onclick = () => {
-			const modalStyle: ConfirmModalStyle = {
-				title: "Held löschen?",
-                description: "Soll der ausgewählte Hero wirklich gelöscht werden?",
-                confirmButtonText: "Löschen",
-                cancelButtonText: "Abbrechen"
-			}
-			new ConfirmWarningModal(this.plugin, modalStyle, () => {
-				this.plugin.heroManager.deleteHero(this.id);
-				this.leaf.detach();
-                this.plugin.viewOpener.openHeroListView();
-			}).open();
-		}*/
-
 		const heroPage = overview.createDiv({cls: "hero-page"});
 
 		const attributesCard = heroPage.createDiv({cls: "hero-card"});
@@ -101,6 +84,23 @@ export class HeroOverview extends DSAView {
 		const maxKarmaEnergy = dataSheet.getMaxKarmaEnergy();
 		if (maxKarmaEnergy > 0) {
 			this.createLabel(bars, "Karmaenergie").appendChild(this.createProgressbar(maxKarmaEnergy, maxKarmaEnergy, ["bg-karma"]))
+		}
+
+		const manageButtons = overview.createDiv({cls: "manage-buttons"});
+
+		const deleteButton = manageButtons.createEl("button", { text: "Löschen", cls: "button delete" });
+		deleteButton.onclick = () => {
+			const modalStyle: ConfirmModalStyle = {
+				title: "Held löschen?",
+				description: "Soll der ausgewählte Hero wirklich gelöscht werden?",
+				confirmButtonText: "Löschen",
+				cancelButtonText: "Abbrechen"
+			}
+			new ConfirmWarningModal(this.plugin, modalStyle, () => {
+				this.plugin.heroManager.deleteHero(this.id);
+				this.leaf.detach();
+				this.plugin.viewOpener.openHeroListView();
+			}).open();
 		}
 
 	}
