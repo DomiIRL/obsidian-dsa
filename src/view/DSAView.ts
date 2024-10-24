@@ -46,15 +46,13 @@ export abstract class DSAView extends ItemView {
 				}
 
 				// check if id already exists
-				if (this.plugin.heroManager.getHeroData(result.id)) {
+				if (this.plugin.heroManager.getRegisteredHero(result.id)) {
 					new Notice("Ordnername bereits vergeben");
                     return;
 				}
 
-				this.plugin.heroManager.createHero(result.toHeroData());
-				this.plugin.heroManager.pushNewDataSheet(result.id, result.dataSheet).then(r => {
-					this.plugin.viewOpener.openHeroOverview(result.id);
-				});
+				this.plugin.heroManager.createHero(result.toHeroData(), result.optoDataSheetRaw);
+
 
 			}).open();
 		};

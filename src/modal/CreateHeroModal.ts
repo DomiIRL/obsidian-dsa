@@ -1,14 +1,14 @@
 import {App, Modal, Notice, Setting} from "obsidian";
 import DSAPlugin from "../../main";
-import {HeroData} from "../data/HeroData";
+import {RegisteredHero} from "../data/HeroData";
 
-export class HeroCreationData extends HeroData {
+export class HeroCreationData extends RegisteredHero {
 
-	dataSheet: string;
+	optoDataSheetRaw: string = '{}';
 
-	constructor(id: string, name: string, dataSheet: any) {
+	constructor(id: string, name: string, optoDataSheetRaw: any) {
 		super(id, name);
-        this.dataSheet = dataSheet;
+        this.optoDataSheetRaw = optoDataSheetRaw;
 	}
 
 }
@@ -20,7 +20,7 @@ export class CreateHeroModal extends Modal {
 
 		let id = '';
 		let name = '';
-		let jsonData = {};
+		let optoDataSheetRaw = {};
 		new Setting(this.contentEl)
 			.setName('Ordnername')
 			.addText((text) =>
@@ -54,7 +54,7 @@ export class CreateHeroModal extends Modal {
 						try {
 							JSON.parse(fileText);
 							new Notice('File uploaded successfully!');
-							jsonData = fileText;
+							optoDataSheetRaw = fileText;
 						} catch (error) {
 							new Notice('Invalid JSON file');
 						}
@@ -71,7 +71,7 @@ export class CreateHeroModal extends Modal {
 					.setCta()
 					.onClick(() => {
 						this.close();
-						onSubmit(new HeroCreationData(id, name, jsonData));
+						onSubmit(new HeroCreationData(id, name, optoDataSheetRaw));
 					}));
 	}
 }

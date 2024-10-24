@@ -1,17 +1,18 @@
 import {App, Plugin, PluginSettingTab, Setting, WorkspaceLeaf} from 'obsidian';
 import {HeroListView, VIEW_HERO_LIST} from "./src/view/HeroListView";
 import {HeroManager} from "./src/data/HeroManager";
-import {HeroData} from "./src/data/HeroData";
+import {RegisteredHero} from "./src/data/HeroData";
 import {ViewOpener} from "./src/view/ViewOpener";
 import {HeroOverview, VIEW_HERO_OVERVIEW} from "./src/view/HeroOverview";
 import {TokenizerView, VIEW_TOKENIZER} from "./src/view/TokenizerView";
+import {FileWatcher} from "./src/data/FileWatcher";
 
 // Remember to rename these classes and interfaces!
 
 interface DSAPluginSettings {
 	heroPath: string;
 	optolithPath: string;
-	heroesList: HeroData[];
+	heroesList: RegisteredHero[];
 }
 
 const DEFAULT_SETTINGS: DSAPluginSettings = {
@@ -24,6 +25,7 @@ export default class DSAPlugin extends Plugin {
 	settings: DSAPluginSettings;
 	heroManager: HeroManager;
 	viewOpener: ViewOpener;
+	fileWatcher: FileWatcher;
 
 	injectSVGFilter() {
 		const svgFilter = `
@@ -38,9 +40,10 @@ export default class DSAPlugin extends Plugin {
 	}
 
 	async onload() {
-		await this.loadSettings();
+		this.fileWatcher = new FileWatcher(this);
 		this.heroManager = new HeroManager(this);
 		this.viewOpener = new ViewOpener(this);
+		await this.loadSettings();
 
 		this.injectSVGFilter();
 
@@ -90,6 +93,7 @@ export default class DSAPlugin extends Plugin {
 
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		this.heroManager.createHeroFolders();
 	}
 
 	async saveSettings() {

@@ -1,33 +1,32 @@
-import {Notice} from "obsidian";
 import {unknownhero} from "../assets/unknownhero.png";
+import {HeroData} from "./HeroData";
 
-export interface AttributeData {
+export interface OptoAttributeData {
 	id: string;
 	value: number;
 }
 
-export interface Item {
+export interface OptoItem {
 	id: string;
 	name: string;
-	gr: number;
 	amount: number;
 
 }
 
-export interface Race {
+export interface OptoRace {
 	id: string;
 	name: string;
 	lp: number;
 }
 
-export const ATTR_MU = "ATTR_1";
-export const ATTR_KL = "ATTR_2";
-export const ATTR_IN = "ATTR_3";
-export const ATTR_CH = "ATTR_4";
-export const ATTR_FF = "ATTR_5";
-export const ATTR_GE = "ATTR_6";
-export const ATTR_KO = "ATTR_7";
-export const ATTR_KK = "ATTR_8"
+export const ATTR_COURAGE = "ATTR_1";
+export const ATTR_SAGACITY = "ATTR_2";
+export const ATTR_INTUITION = "ATTR_3";
+export const ATTR_CHARISMA = "ATTR_4";
+export const ATTR_DEXTERITY = "ATTR_5";
+export const ATTR_AGILITY = "ATTR_6";
+export const ATTR_CONSTITUTION = "ATTR_7";
+export const ATTR_STRENGTH = "ATTR_8"
 
 export const ADV_MAGIC = "ADV_50";
 export const ADV_CONSECRATED = "ADV_12";
@@ -37,7 +36,7 @@ export const RACE_ELF = "R_2";
 export const RACE_HALFELF = "R_3";
 export const RACE_DWARF = "R_4";
 
-const Races: Race[] = [
+const OptoRaces: OptoRace[] = [
 	{
 		id: RACE_HUMAN,
 		name: "Mensch",
@@ -60,7 +59,7 @@ const Races: Race[] = [
 	}
 ]
 
-export class DataSheet {
+export class OptoDataSheet {
 	name: string = "Unknown Hero";
 	avatar: string = unknownhero;
 	ap: {
@@ -87,7 +86,7 @@ export class DataSheet {
 		title: ""
 	};
 	attr: {
-		values: AttributeData[];
+		values: OptoAttributeData[];
 		attributeAdjustmentSelected: string;
 		ae: number;
 		kp: number;
@@ -124,7 +123,7 @@ export class DataSheet {
 	sex: string = "";
 	belongings: {
 		items: {
-			[id: string]: Item;
+			[id: string]: OptoItem;
 		}
 	} = {
 		items: {}
@@ -133,19 +132,19 @@ export class DataSheet {
 
 	} = {}
 
-	getRace(): Race | undefined {
-		return Races.find((race) => race.id === this.r);
+	getRace(): OptoRace | undefined {
+		return OptoRaces.find((race) => race.id === this.r);
 	}
 
-	getMaxHealth(): number {
-		const ko = this.getAttributeById(ATTR_KO);
+	calculateLifePoints(): number {
+		const ko = this.getAttributeById(ATTR_CONSTITUTION);
 		let baseValue = (this.getRace()?.lp || 0) + ko + ko;
 		baseValue += this.attr.lp;
 		baseValue -= this.attr.permanentLP.lost;
 		return baseValue;
 	}
 
-	getMaxAstralEnergy(): number {
+	calculateArcaneEnergy(): number {
 		if (!this.hasActivatable(ADV_MAGIC)) {
 			return 0;
 		}
@@ -155,7 +154,7 @@ export class DataSheet {
 		return baseValue;
 	}
 
-	getMaxKarmaEnergy(): number {
+	calculateKarmaEnergy(): number {
 		if (!this.hasActivatable(ADV_CONSECRATED)) {
 			return 0;
 		}
@@ -178,9 +177,62 @@ export class DataSheet {
 		return this.activatable.hasOwnProperty(id);
 	}
 
+	writeToHeroData(heroData: HeroData): HeroData {
+
+		// Only assign values if they exist in the DataSheet
+		if (this.name) heroData.name = this.name;
+		if (this.avatar) heroData.avatar = this.avatar;
+		if (this.pers.family) heroData.familyName = this.pers.family;
+		if (this.pers.title) heroData.title = this.pers.title;
+		if (this.pers.age !== undefined) heroData.age = this.pers.age.toString(); // Ensure age is a string
+
+		const race = this.getRace();
+		if (race) {
+			heroData.race = {
+				name: race.name,
+				lp: race.lp,
+			};
+		}
+
+		if (this.ap.total) heroData.adventurePoints = this.ap.total;
+
+		// Attributes assignment with checks
+		const attributesMap = {
+			"ATTR_1": "courage",
+			"ATTR_2": "sagacity",
+			"ATTR_3": "intuition",
+			"ATTR_4": "charisma",
+			"ATTR_5": "dexterity",
+			"ATTR_6": "agility",
+			"ATTR_7": "constitution",
+			"ATTR_8": "strength",
+		};
+
+		for (const [attrId, propName] of Object.entries(attributesMap)) {
+			const attrValue = this.getAttributeById(attrId);
+			if (attrValue !== undefined) {
+				// @ts-ignore
+				heroData[propName] = attrValue;
+			}
+		}
+
+		// Calculating life points, arcane energy, and karma energy
+		heroData.lifePoints = this.calculateLifePoints();
+		heroData.arcaneEnergy = this.calculateArcaneEnergy();
+		heroData.karmaEnergy = this.calculateKarmaEnergy();
+
+		// Inventory mapping
+		heroData.inventory = Object.values(this.belongings.items).map((item: any) => ({
+			name: item.name,
+			quantity: item.amount || 1,
+		}));
+
+		return heroData;
+	}
+
 	// Static method to create a new DataSheet instance from JSON
-	static fromJson(jsonData: any): DataSheet {
-		const dataSheet = new DataSheet();
+	static fromJson(jsonData: any): OptoDataSheet {
+		const dataSheet = new OptoDataSheet();
 		Object.assign(dataSheet, jsonData);  // Assign the JSON data to the class
 		return dataSheet;
 	}

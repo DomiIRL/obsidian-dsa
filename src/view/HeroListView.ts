@@ -1,6 +1,6 @@
 import {WorkspaceLeaf} from 'obsidian';
 import DSAPlugin from "../../main";
-import {HeroData} from "../data/HeroData";
+import {RegisteredHero} from "../data/HeroData";
 import {DSAView} from "./DSAView";
 
 export const VIEW_HERO_LIST = 'hero-list';
@@ -37,14 +37,12 @@ export class HeroListView extends DSAView {
 
 		const { heroManager } = this.plugin;
 
-		heroManager.validateHeroData();
-
-		const heroes = heroManager.getHeroes();
+		const heroes = heroManager.getRegisteredHeroes();
 
 		const heroList = listContainer.createDiv();
 		heroList.addClass("hero-list");
 		for (let i = 0; i < heroes.length; i++) {
-			const hero: HeroData = heroes[i];
+			const hero: RegisteredHero = heroes[i];
 
 			const heroItemWrapper = heroList.createDiv();
 			heroItemWrapper.addClass("hero-item-wrapper");
@@ -53,7 +51,7 @@ export class HeroListView extends DSAView {
 
 			heroItem.addClass("hero-item");
 
-			heroManager.getHeroDataSheet(hero.id).then(value => {
+			heroManager.getHeroData(hero.id).then(value => {
 				if (!value) return;
 				heroItem.style.backgroundImage = `url(${value.avatar})`;
 			});
