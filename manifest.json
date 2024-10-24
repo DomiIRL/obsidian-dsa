@@ -1,0 +1,14 @@
+{
+	"id": "obsidian-dsa",
+	"name": "Das Schwarze Auge",
+	"version": "1.0.0",
+	"minAppVersion": "0.15.0",
+	"description": "Manage LeP, AsP, Loot and more for your adventures",
+	"author": "Dominik Sievert",
+	"authorUrl": "https://github.com/kxmischesdomi",
+	"fundingUrl": "",
+	"isDesktopOnly": false,
+	"files": {
+
+	}
+}

@@ -1,0 +1,27 @@
+{
+  "heroPath": "Hero",
+  "optolithPath": "",
+  "heroesList": [
+    {
+      "id": "Douma",
+      "name": "Douma"
+    },
+    {
+      "id": "Doran",
+      "name": "Doran"
+    },
+    {
+      "id": "test",
+      "name": "test"
+    },
+    {
+      "id": "Zwerg",
+      "name": "Zwerg"
+    },
+    {
+      "id": "d",
+      "name": "d"
+    }
+  ],
+  "charactersPath": ""
+}
