@@ -26,11 +26,11 @@ export abstract class DSAView extends ItemView {
 		this.containerEl.empty();
 		this.containerEl.addClass("dsa-view");
 
-		const header = this.containerEl.createDiv({cls: "dsa-header" });
+		const header = this.containerEl.createDiv({cls: "header" });
 
-		const banner = header.createDiv({ cls: "dsa-banner"});
+		const banner = header.createDiv({ cls: "banner"});
 
-		const navigationBox = header.createDiv({ cls: "dsa-navigation-box"});
+		const navigationBox = header.createDiv({ cls: "navigation-box"});
 		const navigation = navigationBox.createEl("ul");
 
 		navigation.createEl("li").createEl("button", { text: "Heldenliste" }).onclick = () => {
@@ -68,16 +68,16 @@ export abstract class DSAView extends ItemView {
 			this.plugin.viewOpener.openTokenizerView();
 		};
 
-		header.createEl('h1', {text: this.getTitle(), cls: "dsa-view-title"});
+		header.createEl('h1', {text: this.getTitle()});
 
-		header.createEl("hr")
+		header.createEl("hr");
 
 
 		return super.onOpen();
 	}
 
 	createContentElement(clazz: string = ""): HTMLElement {
-		return this.containerEl.createDiv({cls: `dsa-content ${clazz}`});
+		return this.containerEl.createDiv({cls: `content ${clazz}`});
 	}
 
 	private openOptolith() {

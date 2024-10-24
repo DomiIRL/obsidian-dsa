@@ -4,6 +4,7 @@ import { DSAView } from "./DSAView";
 import { HeroData } from "../data/HeroData";
 import {ATTR_CH, ATTR_FF, ATTR_GE, ATTR_IN, ATTR_KK, ATTR_KL, ATTR_KO, ATTR_MU, DataSheet} from "../data/DataSheet";
 import {ConfirmWarningModal, ConfirmModalStyle} from "../modal/ConfirmWarningModal";
+import {it} from "node:test";
 
 export const VIEW_HERO_OVERVIEW = 'hero-overview';
 
@@ -47,29 +48,42 @@ export class HeroOverview extends DSAView {
 
 		await super.onOpen();
 
-		const overview = this.createContentElement("dsa-hero-overview")
+		const overview = this.createContentElement("hero-overview")
 
 		const dataSheet = await this.getDataSheet();
 
 		const heroPage = overview.createDiv({cls: "hero-page"});
 
-		const attributesCard = heroPage.createDiv({cls: "hero-card"});
+		const attributesCard = heroPage.createDiv({cls: "hero-card attributes-card"});
 
 		attributesCard.createEl("h1", { cls: "name", text: `${dataSheet.name || 'Unknown Hero'} ${dataSheet.pers.title ? `"${dataSheet.pers.title}"` : ''} ${dataSheet.pers.family || ''} (${dataSheet.ap.total} AP)` });
 
+		attributesCard.createEl("hr");
+
 		const attributes = attributesCard.createDiv({cls: "attributes"});
-		this.createLabel(attributes, "MU").createDiv({cls: "attribute mu", text: `${dataSheet?.getAttributeById(ATTR_MU)}`})
-		this.createLabel(attributes, "KL").createDiv({cls: "attribute kl", text: `${dataSheet?.getAttributeById(ATTR_KL)}`})
-		this.createLabel(attributes, "IN").createDiv({cls: "attribute in", text: `${dataSheet?.getAttributeById(ATTR_IN)}`})
-		this.createLabel(attributes, "CH").createDiv({cls: "attribute ch", text: `${dataSheet?.getAttributeById(ATTR_CH)}`})
-		this.createLabel(attributes, "FF").createDiv({cls: "attribute ff", text: `${dataSheet?.getAttributeById(ATTR_FF)}`})
-		this.createLabel(attributes, "GE").createDiv({cls: "attribute ge", text: `${dataSheet?.getAttributeById(ATTR_GE)}`})
-		this.createLabel(attributes, "KO").createDiv({cls: "attribute ko", text: `${dataSheet?.getAttributeById(ATTR_KO)}`})
-		this.createLabel(attributes, "KK").createDiv({cls: "attribute kk", text: `${dataSheet?.getAttributeById(ATTR_KK)}`})
+		this.createLabel(attributes, "MU").createDiv({cls: "attribute shadow mu", text: `${dataSheet?.getAttributeById(ATTR_MU)}`})
+		this.createLabel(attributes, "KL").createDiv({cls: "attribute shadow kl", text: `${dataSheet?.getAttributeById(ATTR_KL)}`})
+		this.createLabel(attributes, "IN").createDiv({cls: "attribute shadow in", text: `${dataSheet?.getAttributeById(ATTR_IN)}`})
+		this.createLabel(attributes, "CH").createDiv({cls: "attribute shadow ch", text: `${dataSheet?.getAttributeById(ATTR_CH)}`})
+		this.createLabel(attributes, "FF").createDiv({cls: "attribute shadow ff", text: `${dataSheet?.getAttributeById(ATTR_FF)}`})
+		this.createLabel(attributes, "GE").createDiv({cls: "attribute shadow ge", text: `${dataSheet?.getAttributeById(ATTR_GE)}`})
+		this.createLabel(attributes, "KO").createDiv({cls: "attribute shadow ko", text: `${dataSheet?.getAttributeById(ATTR_KO)}`})
+		this.createLabel(attributes, "KK").createDiv({cls: "attribute shadow kk", text: `${dataSheet?.getAttributeById(ATTR_KK)}`})
+
+		attributesCard.createEl("hr");
+
+		// Inventory
+		const inventory = attributesCard.createDiv({cls: "inventory"});
+
+		const belongings = dataSheet.belongings;
+		for (let itemsKey in belongings.items) {
+			const item = belongings.items[itemsKey];
+			inventory.createDiv({cls: "item", text: item.name });
+		}
 
 		const portraitCard = heroPage.createDiv({cls: "hero-card portrait-card"});
 
-		const heroPortrait = portraitCard.createDiv({ cls: "hero-portrait" });
+		const heroPortrait = portraitCard.createDiv({ cls: "hero-portrait shadow" });
 		heroPortrait.style.backgroundImage = `url(${dataSheet?.avatar})`;
 
 		const bars = portraitCard.createDiv({cls: "progress-bars"});
@@ -112,7 +126,7 @@ export class HeroOverview extends DSAView {
 	}
 
 	createProgressbar(max: number, value: number, classes: string[]): HTMLDivElement {
-		const progress = createDiv({cls: "progress"});
+		const progress = createDiv({cls: "progress shadow"});
 
 		const progressBar = progress.createDiv({cls: "progress-bar"});
 		if (max > 0) {

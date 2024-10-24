@@ -122,9 +122,12 @@ export class DataSheet {
 		}
 	};
 	sex: string = "";
-
 	belongings: {
-		items: Item[]
+		items: {
+			[id: string]: Item;
+		}
+	} = {
+		items: {}
 	}
 	activatable: {
 

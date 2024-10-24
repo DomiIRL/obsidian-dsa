@@ -33,7 +33,7 @@ export class HeroListView extends DSAView {
 	async onOpen() {
 		await super.onOpen();
 
-		const listContainer = this.createContentElement(VIEW_HERO_LIST);
+		const listContainer = this.createContentElement("list-wrapper");
 
 		const { heroManager } = this.plugin;
 
@@ -42,7 +42,7 @@ export class HeroListView extends DSAView {
 		const heroes = heroManager.getHeroes();
 
 		const heroList = listContainer.createDiv();
-		heroList.addClass("dsa-hero-list");
+		heroList.addClass("hero-list");
 		for (let i = 0; i < heroes.length; i++) {
 			const hero: HeroData = heroes[i];
 
