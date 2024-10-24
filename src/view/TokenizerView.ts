@@ -35,8 +35,7 @@ export class TokenizerView extends DSAView {
 				style: 'width: 100%; height: 100%; border: none;', // Ensure it fills the container
 			}
 		});
-
-		re
+		
 	}
 
 }
