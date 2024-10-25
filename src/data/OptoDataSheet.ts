@@ -235,7 +235,7 @@ export class OptoDataSheet {
 		const filteredItems = dataSheetItems.filter((item: any) =>!manuallyAddedItems.some((manuallyAddedItem: any) => manuallyAddedItem.name === item.name));
 
 		// Merge manually added items with the inventory
-		heroData.inventory = [...dataSheetItems, ...manuallyAddedItems];
+		heroData.inventory = [...filteredItems, ...manuallyAddedItems];
 
 		return heroData;
 	}
