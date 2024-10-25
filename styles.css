@@ -311,13 +311,14 @@
     gap: 20px;
 	flex-grow: 1;
 	flex-basis: 0;
+	padding: 45px
 }
 
 .dsa-view .hero-overview .hero-portrait {
+	position: relative;
 	width: 100%;
 	aspect-ratio: 1;
 	background-size: cover;
-	border-radius: 20px;
 }
 
 .dsa-view .hero-overview .progress-bars {
@@ -332,6 +333,13 @@
 	height: 2rem;
 	overflow: hidden;
 	position: relative;
+
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+.dsa-view .progress:hover {
+	transform: scale(1.05);
 }
 
 .dsa-view .progress-bar {
@@ -364,4 +372,52 @@
 
 .dsa-view .bg-armor {
 	background-color: #17a2b8;
+}
+
+.tape-section {
+	position: absolute;
+	width: 100%;
+}
+
+.tape-section:first-of-type {
+	top: 0;
+}
+
+.tape-section:last-of-type {
+	bottom: 0;
+}
+
+.tape-section::before,
+.tape-section::after {
+	content: "";
+	width: 7vmin;
+	height: 2vmin;
+	position: absolute;
+	background-color: #dbd8be;
+	opacity: 0.5;
+	border-right: 1px dotted #b7b49d;
+	border-left: 1px dotted #b7b49d;
+}
+
+.tape-section:last-of-type::after {
+	transform: rotate(-45deg);
+	right: -3vmin;
+	top: -2vmin;
+}
+
+.tape-section:first-of-type::before {
+	transform: rotate(-45deg);
+	left: -3vmin;
+}
+
+.tape-section:first-of-type::after {
+	transform: rotate(45deg);
+	right: -3vmin;
+	top: 0;
+}
+
+.tape-section:last-of-type::before {
+	transform: rotate(45deg);
+	left: -3vmin;
+	bottom: 0
 }

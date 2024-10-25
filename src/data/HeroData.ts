@@ -27,7 +27,6 @@ export interface Race {
 }
 
 export class HeroData {
-	avatar: string = '';
 	name: string = 'Unknown Hero';
 	familyName: string = '';
 	title: string = '';
@@ -57,6 +56,9 @@ export class HeroData {
 	karmaEnergy: number = 0;
 	currentKarmaEnergyLost: number = 0;
 
+	armor: number = 0;
+	currentArmorLost: number = 0;
+
 	spirit: number = 0;
 	toughness: number = 0;
 	dodge: number = 0;
@@ -64,6 +66,8 @@ export class HeroData {
 	movement: number = 0;
 
 	inventory: Item[] = [];
+
+	avatar: string = '';
 
 	getAvatar() {
 		return this.avatar || noAvatarImage;

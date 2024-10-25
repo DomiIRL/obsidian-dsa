@@ -73,7 +73,7 @@ export class HeroManager {
 
 		await this.updateHeroData(heroId, heroData);
 
-		// this.extractPortraitAsFile(heroId).then();
+		this.extractPortraitAsFile(heroId).then();
 	}
 
 	async updateHeroData(heroId: string, heroData: HeroData): Promise<void> {
@@ -102,20 +102,18 @@ export class HeroManager {
 
 	}
 
-	// todo: implement again
-	// async extractPortraitAsFile(heroId: string): Promise<void> {
-	// 	const heroDataSheet = await this.getHeroDataSheet(heroId);
-	// 	const avatar = heroDataSheet?.avatar;
-	// 	if (!avatar) return;
-	// 	const folderPath = `${this.plugin.settings.heroPath}/${heroId}`;
-	// 	const filename = `portrait.png`;
-	// 	try {
-	// 		await this.saveBase64Image(avatar, `${folderPath}/${filename}`);
-	// 	} catch (error) {
-	// 		console.error('Failed to save avatar image:', error);
-	// 		new Notice(`Failed to save avatar for heroId: ${heroId}`);
-	// 	}
-	// }
+	async extractPortraitAsFile(heroId: string): Promise<void> {
+		const heroDataSheet = await this.getHeroData(heroId);
+		const avatar = heroDataSheet.avatar;
+		if (!avatar) return;
+		const filename = `portrait.png`;
+		try {
+			await this.plugin.fileWatcher.saveBase64Image(avatar, `${this.getHeroFolderPath(heroId)}/${filename}`);
+		} catch (error) {
+			console.error('Failed to save avatar image:', error);
+			new Notice(`Failed to save avatar for heroId: ${heroId}`);
+		}
+	}
 
 }
 

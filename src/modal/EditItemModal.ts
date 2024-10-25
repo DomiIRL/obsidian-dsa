@@ -1,6 +1,7 @@
 import {Modal, Notice, Setting} from "obsidian";
 import DSAPlugin from "../../main";
 import {Item} from "../data/HeroData";
+import {evaluateExpression} from "../data/Mather";
 
 export class EditItemModal extends Modal {
 
@@ -45,7 +46,7 @@ export class EditItemModal extends Modal {
                 component.inputEl.type = "number";
 
                 component.onChange(async (value) => {
-                    modifiedItem.quantity = parseFloat(value);
+                    modifiedItem.quantity = evaluateExpression(value);
                 });
             });
 

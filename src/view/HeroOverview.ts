@@ -6,6 +6,7 @@ import {ATTR_CHARISMA, ATTR_DEXTERITY, ATTR_AGILITY, ATTR_INTUITION, ATTR_STRENG
 import {ConfirmWarningModal, ConfirmModalStyle} from "../modal/ConfirmWarningModal";
 import {it} from "node:test";
 import {EditItemModal} from "../modal/EditItemModal";
+import {HeroPointModalSettings, ModifyHeroPointModal} from "../modal/ModifyHeroPointModal";
 
 export const VIEW_HERO_OVERVIEW = 'hero-overview';
 
@@ -85,34 +86,81 @@ export class HeroOverview extends DSAView {
 				new EditItemModal(this.plugin, heroId, item, async () => {
 					await this.onOpen();
 				}).open();
-            }
+			}
 		})
 
 		// add add button as item
 		const addItemButton = inventory.createDiv({  cls: "item" });
 		addItemButton.createDiv({ text: "+", cls: "add-item" })
-        addItemButton.onclick = async () => {
+		addItemButton.onclick = async () => {
 			new EditItemModal(this.plugin, heroId, null, async () => {
 				await this.onOpen();
 			}).open();
-        }
+		}
 
 		const portraitCard = heroPage.createDiv({cls: "hero-card portrait-card paper"});
 
 		const heroPortrait = portraitCard.createDiv({ cls: "hero-portrait shadow" });
+
+		heroPortrait.createDiv({ cls: "tape-section" });
+		heroPortrait.createDiv({ cls: "tape-section" });
+
 		heroPortrait.style.backgroundImage = `url(${heroData.getAvatar()})`;
 
 		const bars = portraitCard.createDiv({cls: "progress-bars"});
 
-		this.createLabel(bars, "Lebensenergie").appendChild(this.createProgressbar(heroData.lifePoints, heroData.lifePoints - heroData.currentLifePointsLost, ["bg-health"]))
+		this.createLabel(bars, "Lebensenergie").appendChild(this.createPointBar(["bg-health"], {
+			title: "Lebensenergie",
+			description: "Lebensenergie des Helden",
+			max: heroData.lifePoints,
+			currentLost: heroData.currentLifePointsLost,
+			onSubmit: (max, currentLost) => {
+				heroData.lifePoints = max;
+				heroData.currentLifePointsLost = currentLost;
+				this.plugin.heroManager.updateHeroData(heroId, heroData);
+				this.onOpen();
+			}
+		}));
 
-		if (heroData.arcaneEnergy > 0) {
-			this.createLabel(bars, "Astralenergie").appendChild(this.createProgressbar(heroData.arcaneEnergy, heroData.arcaneEnergy - heroData.currentArcaneEnergyLost, ["bg-astral"]))
-		}
+		this.createLabel(bars, "Astralenergie").appendChild(this.createPointBar(["bg-astral"], {
+			title: "Astralenergie",
+			description: "Astralenergie des Helden",
+			max: heroData.arcaneEnergy,
+			currentLost: heroData.currentArcaneEnergyLost,
+			onSubmit: (max, currentLost) => {
+				heroData.arcaneEnergy = max;
+				heroData.currentArcaneEnergyLost = currentLost;
+				this.plugin.heroManager.updateHeroData(heroId, heroData);
+				this.onOpen();
+			}
+		}));
 
-		if (heroData.karmaEnergy > 0) {
-			this.createLabel(bars, "Karmaenergie").appendChild(this.createProgressbar(heroData.karmaEnergy, heroData.karmaEnergy - heroData.currentKarmaEnergyLost, ["bg-karma"]))
-		}
+
+		this.createLabel(bars, "Karmaenergie").appendChild(this.createPointBar(["bg-karma"], {
+			title: "Karmaenergie",
+			description: "Karmaenergie des Helden",
+			max: heroData.karmaEnergy,
+			currentLost: heroData.currentKarmaEnergyLost,
+			onSubmit: (max, currentLost) => {
+				heroData.karmaEnergy = max;
+				heroData.currentKarmaEnergyLost = currentLost;
+				this.plugin.heroManager.updateHeroData(heroId, heroData);
+				this.onOpen();
+			}
+		}))
+
+		this.createLabel(bars, "Rüstung").appendChild(this.createPointBar(["bg-armor"], {
+			title: "Rüstung",
+			description: "Rüstung des Helden",
+			max: heroData.armor,
+			currentLost: heroData.currentArmorLost,
+			onSubmit: (max, currentLost) => {
+				heroData.armor = max;
+				heroData.currentArmorLost = currentLost;
+				this.plugin.heroManager.updateHeroData(heroId, heroData);
+				this.onOpen();
+			}
+		}))
 
 		const manageButtons = overview.createDiv({cls: "manage-buttons"});
 
@@ -166,20 +214,28 @@ export class HeroOverview extends DSAView {
 		return wrapper;
 	}
 
-	createProgressbar(max: number, value: number, classes: string[]): HTMLDivElement {
+	createPointBar(classes: string[], modifySettings: HeroPointModalSettings): HTMLDivElement {
 		const progress = createDiv({cls: "progress shadow"});
+
+		progress.onclick = () => {
+			new ModifyHeroPointModal(this.plugin, this.id, modifySettings).open();
+		}
+
+		const max = modifySettings.max;
+		const currentLost = modifySettings.currentLost;
+		const current = max - currentLost;
 
 		const progressBar = progress.createDiv({cls: "progress-bar"});
 		if (max > 0) {
-        	progressBar.style.width = `${(value / max) * 100}%`;
+			progressBar.style.width = `${(current / max) * 100}%`;
 		} else {
 			progressBar.style.width = "0%";
 		}
 		progressBar.addClasses(classes);
 
-		progress.createDiv({ cls: "progress-value-label", text: `${value} / ${max}` });
+		progress.createDiv({ cls: "progress-value-label", text: `${current} / ${max}` });
 
-        return progress;
+		return progress;
 	}
 
 	getState(): Record<string, unknown> {
