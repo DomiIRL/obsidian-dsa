@@ -26,6 +26,39 @@ export interface Race {
 	lp: number;
 }
 
+// For modifying values
+export class Attributes {
+	integrateInBaseValues: false; // If the modifier should be integrated into the base values or should be noted separately
+
+	courage: number = 0;
+	sagacity: number = 0;
+	intuition: number = 0;
+	charisma: number = 0;
+	dexterity: number = 0;
+	agility: number = 0;
+	constitution: number = 0;
+	strength: number = 0;
+
+	lifePoints: number = 0;
+	enhancedLifePointsRegeneration = 0;
+	arcaneEnergy: number = 0;
+	enhancedArcaneEnergyRegeneration: number = 0;
+	karmaEnergy: number = 0;
+	enhancedKarmaEnergyRegeneration: number = 0;
+
+	spirit: number = 0;
+	toughness: number = 0;
+	dodge: number = 0;
+	initiative: number = 0;
+	movement: number = 0;
+}
+
+export interface Advantage {
+	name: string;
+	type: 'positive' | 'negative';
+	modifier: Attributes;
+}
+
 export class HeroData {
 	name: string = 'Unknown Hero';
 	familyName: string = '';
@@ -35,6 +68,9 @@ export class HeroData {
 		name: 'Unknown',
         lp: 0,
 	}
+
+	baseAttributes: Attributes = new Attributes();
+	
 
 	adventurePoints: number = 0;
 
@@ -49,12 +85,15 @@ export class HeroData {
 
 	lifePoints: number = 0;
 	currentLifePointsLost: number = 0;
+	enhancedLifePointsRegeneration = 0;
 
 	arcaneEnergy: number = 0;
 	currentArcaneEnergyLost: number = 0;
+	enhancedArcaneEnergyRegeneration: number = 0;
 
 	karmaEnergy: number = 0;
 	currentKarmaEnergyLost: number = 0;
+	enhancedKarmaEnergyRegeneration: number = 0;
 
 	armor: number = 0;
 	currentArmorLost: number = 0;

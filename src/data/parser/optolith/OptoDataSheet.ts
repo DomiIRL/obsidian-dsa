@@ -1,4 +1,4 @@
-import {HeroData} from "./HeroData";
+import {HeroData} from "../../HeroData";
 
 export interface OptoAttributeData {
 	id: string;

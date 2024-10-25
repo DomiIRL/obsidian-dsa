@@ -1,7 +1,7 @@
 import DSAPlugin from "../../main";
 import {HeroData, RegisteredHero} from "./HeroData";
-import {Notice, TFile, TFolder} from "obsidian";
-import {OptoDataSheet} from "./OptoDataSheet";
+import {Notice} from "obsidian";
+import {OptoDataSheet} from "./parser/optolith/OptoDataSheet";
 
 export class HeroManager {
 
@@ -25,6 +25,14 @@ export class HeroManager {
 
 	getRegisteredHeroes(): RegisteredHero[] {
 		return this.plugin.settings.heroesList;
+	}
+
+	updateHero(heroData: RegisteredHero) {
+		const index = this.plugin.settings.heroesList.findIndex(hero => hero.id === heroData.id);
+        if (index > -1) {
+            this.plugin.settings.heroesList[index] = heroData;
+            this.plugin.saveSettings().then();
+        }
 	}
 
 	createHero(heroData: RegisteredHero, optoDatasheetRaw: string): void {
@@ -98,7 +106,6 @@ export class HeroManager {
 				return new HeroData();
 			}
 		});
-
 
 	}
 

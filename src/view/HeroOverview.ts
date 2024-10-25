@@ -7,6 +7,7 @@ import {ConfirmWarningModal, ConfirmModalStyle} from "../modal/ConfirmWarningMod
 import {it} from "node:test";
 import {EditItemModal} from "../modal/EditItemModal";
 import {HeroPointModalSettings, ModifyHeroPointModal} from "../modal/ModifyHeroPointModal";
+import {ModifyHeroModal} from "../modal/ModifyHeroModal";
 
 export const VIEW_HERO_OVERVIEW = 'hero-overview';
 
@@ -56,11 +57,11 @@ export class HeroOverview extends DSAView {
 
 		const heroPage = overview.createDiv({cls: "hero-page"});
 
-		const attributesCard = heroPage.createDiv({cls: "hero-card attributes-card paper"});
+		const leftCard = heroPage.createDiv({cls: "left-card"});
+
+		const attributesCard = leftCard.createDiv({cls: "hero-card attributes-card paper"});
 
 		attributesCard.createEl("h1", { cls: "name", text: `${heroData.name || 'Unknown Hero'} ${heroData.title ? `"${heroData.title}"` : ''} ${heroData.familyName || ''} (${heroData.adventurePoints} AP)` });
-
-		attributesCard.createEl("hr");
 
 		const attributes = attributesCard.createDiv({cls: "attributes"});
 		this.createLabel(attributes, "MU").createDiv({cls: "attribute shadow mu", text: `${heroData.courage}`})
@@ -72,11 +73,10 @@ export class HeroOverview extends DSAView {
 		this.createLabel(attributes, "KO").createDiv({cls: "attribute shadow ko", text: `${heroData.constitution}`})
 		this.createLabel(attributes, "KK").createDiv({cls: "attribute shadow kk", text: `${heroData.strength}`})
 
-		attributesCard.createEl("hr");
-
 		// Inventory
+		const inventoryCard = leftCard.createDiv({cls: "hero-card inventory-card paper"});
 
-		const labelWrapper = attributesCard.createDiv({cls: "inventory-label-wrapper"});
+		const labelWrapper = inventoryCard.createDiv({cls: "inventory-label-wrapper"});
 		const inventory = this.createLabel(labelWrapper, "Inventar").createDiv({cls: "inventory "});
 
 		const belongings = heroData.inventory;
@@ -162,6 +162,8 @@ export class HeroOverview extends DSAView {
 			}
 		}))
 
+		overview.createEl('hr');
+
 		const manageButtons = overview.createDiv({cls: "manage-buttons"});
 
 		const deleteButton = manageButtons.createEl("button", { text: "Löschen", cls: "button delete" });
@@ -178,6 +180,13 @@ export class HeroOverview extends DSAView {
 				this.plugin.viewOpener.openHeroListView();
 			}).open();
 		}
+
+		const editButton = manageButtons.createEl("button", { text: "Bearbeiten", cls: "button edit" });
+		editButton.onclick = () => {
+            new ModifyHeroModal(this.plugin, this.id, () => {
+                this.onOpen();
+            }).open();
+        }
 
 		const updateOptolithButton = manageButtons.createEl("button", { text: "Optolith Datei Aktualisieren", cls: "button" });
 		updateOptolithButton.onclick = () => {
