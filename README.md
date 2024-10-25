@@ -15,6 +15,11 @@ A work in progress plugin to manage your dsa (Das Schwarze Auge) Heroes in realt
 
 Note: (Work in progress images can be old)
 
-![image](https://github.com/user-attachments/assets/d6651d65-e427-413f-9cfd-bf4184fba583)
+![image](https://github.com/user-attachments/assets/ab114d08-bd3d-4455-8585-06e19c5c97d1)
 
-![image](https://github.com/user-attachments/assets/ee5dfb86-d266-4350-b6a0-bc685233aacd)
+
+![image](https://github.com/user-attachments/assets/f728ad14-4880-4d1c-8b87-2408d5258868)
+
+![image](https://github.com/user-attachments/assets/5857e092-7273-48a0-a220-ed5113115182)
+
+![image](https://github.com/user-attachments/assets/8c86783e-1e75-4796-8b7b-f63f6bc63296)
