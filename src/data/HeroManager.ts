@@ -1,7 +1,7 @@
 import DSAPlugin from "../../main";
 import {HeroData, RegisteredHero} from "./HeroData";
 import {Notice, TFile, TFolder} from "obsidian";
-import {OptoDataSheet} from "./DataSheet";
+import {OptoDataSheet} from "./OptoDataSheet";
 
 export class HeroManager {
 
@@ -71,10 +71,14 @@ export class HeroManager {
 		const heroData = await this.getHeroData(heroId);
 		optoDataSheet.writeToHeroData(heroData);
 
-		const filePath = `${this.plugin.settings.heroPath}/${heroId}/data.json`;
-		await this.plugin.fileWatcher.writeObjectToJsonFile(filePath, heroData);
+		await this.updateHeroData(heroId, heroData);
 
 		// this.extractPortraitAsFile(heroId).then();
+	}
+
+	async updateHeroData(heroId: string, heroData: HeroData): Promise<void> {
+		const filePath = `${this.plugin.settings.heroPath}/${heroId}/data.json`;
+		await this.plugin.fileWatcher.writeObjectToJsonFile(filePath, heroData);
 	}
 
 	async getHeroData(heroId: string): Promise<HeroData> {

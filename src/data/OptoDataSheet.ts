@@ -1,4 +1,3 @@
-import {unknownhero} from "../assets/unknownhero.png";
 import {HeroData} from "./HeroData";
 
 export interface OptoAttributeData {
@@ -61,7 +60,7 @@ const OptoRaces: OptoRace[] = [
 
 export class OptoDataSheet {
 	name: string = "Unknown Hero";
-	avatar: string = unknownhero;
+	avatar: string = "";
 	ap: {
 		total: number;
 	} = {
@@ -179,12 +178,13 @@ export class OptoDataSheet {
 
 	writeToHeroData(heroData: HeroData): HeroData {
 
-		// Only assign values if they exist in the DataSheet
-		if (this.name) heroData.name = this.name;
-		if (this.avatar) heroData.avatar = this.avatar;
-		if (this.pers.family) heroData.familyName = this.pers.family;
-		if (this.pers.title) heroData.title = this.pers.title;
-		if (this.pers.age !== undefined) heroData.age = this.pers.age.toString(); // Ensure age is a string
+		const templateData = new HeroData();
+
+		heroData.name = this.name || templateData.name;
+		heroData.avatar = this.avatar || templateData.avatar;
+		heroData.familyName = this.pers.family || templateData.familyName;
+		heroData.title = this.pers.title || templateData.title;
+		heroData.age = `${this.pers.age || templateData.age}`;
 
 		const race = this.getRace();
 		if (race) {
@@ -192,9 +192,11 @@ export class OptoDataSheet {
 				name: race.name,
 				lp: race.lp,
 			};
+		} else {
+			heroData.race = templateData.race;
 		}
 
-		if (this.ap.total) heroData.adventurePoints = this.ap.total;
+		heroData.adventurePoints = this.ap.total;
 
 		// Attributes assignment with checks
 		const attributesMap = {
@@ -221,11 +223,19 @@ export class OptoDataSheet {
 		heroData.arcaneEnergy = this.calculateArcaneEnergy();
 		heroData.karmaEnergy = this.calculateKarmaEnergy();
 
+		const manuallyAddedItems = Object.values(heroData.inventory).filter((item: any) =>!item.fromThirdPartySoftware);
+
 		// Inventory mapping
-		heroData.inventory = Object.values(this.belongings.items).map((item: any) => ({
+		const dataSheetItems = Object.values(this.belongings.items).map((item: any) => ({
+			fromThirdPartySoftware: true,
 			name: item.name,
 			quantity: item.amount || 1,
 		}));
+		// Remove items that are also in manually added items
+		const filteredItems = dataSheetItems.filter((item: any) =>!manuallyAddedItems.some((manuallyAddedItem: any) => manuallyAddedItem.name === item.name));
+
+		// Merge manually added items with the inventory
+		heroData.inventory = [...dataSheetItems, ...manuallyAddedItems];
 
 		return heroData;
 	}

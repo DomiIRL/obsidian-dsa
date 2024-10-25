@@ -1,10 +1,11 @@
 import {Modal, Notice, Setting, ViewStateResult, WorkspaceLeaf} from 'obsidian';
 import DSAPlugin from "../../main";
 import { DSAView } from "./DSAView";
-import {HeroData, RegisteredHero} from "../data/HeroData";
-import {ATTR_CHARISMA, ATTR_DEXTERITY, ATTR_AGILITY, ATTR_INTUITION, ATTR_STRENGTH, ATTR_SAGACITY, ATTR_CONSTITUTION, ATTR_COURAGE, OptoDataSheet} from "../data/DataSheet";
+import {HeroData, Item, RegisteredHero} from "../data/HeroData";
+import {ATTR_CHARISMA, ATTR_DEXTERITY, ATTR_AGILITY, ATTR_INTUITION, ATTR_STRENGTH, ATTR_SAGACITY, ATTR_CONSTITUTION, ATTR_COURAGE, OptoDataSheet} from "../data/OptoDataSheet";
 import {ConfirmWarningModal, ConfirmModalStyle} from "../modal/ConfirmWarningModal";
 import {it} from "node:test";
+import {EditItemModal} from "../modal/EditItemModal";
 
 export const VIEW_HERO_OVERVIEW = 'hero-overview';
 
@@ -75,25 +76,31 @@ export class HeroOverview extends DSAView {
 		// Inventory
 
 		const labelWrapper = attributesCard.createDiv({cls: "inventory-label-wrapper"});
-		const inventory = this.createLabel(labelWrapper, "Inventar").createDiv({cls: "inventory paper"});
+		const inventory = this.createLabel(labelWrapper, "Inventar").createDiv({cls: "inventory "});
 
 		const belongings = heroData.inventory;
 		belongings.forEach(item => {
-			inventory.createDiv({cls: "item", text: item.name });
-
+			const itemElement = inventory.createDiv({cls: "item", text: `${item.name}${item.quantity > 1 ? ` x${item.quantity}` : ""}` });
+			itemElement.onclick = async () => {
+				new EditItemModal(this.plugin, heroId, item, async () => {
+					await this.onOpen();
+				}).open();
+            }
 		})
 
 		// add add button as item
-		const addItemButton = inventory.createDiv({  cls: " item" });
+		const addItemButton = inventory.createDiv({  cls: "item" });
 		addItemButton.createDiv({ text: "+", cls: "add-item" })
         addItemButton.onclick = async () => {
-
+			new EditItemModal(this.plugin, heroId, null, async () => {
+				await this.onOpen();
+			}).open();
         }
 
 		const portraitCard = heroPage.createDiv({cls: "hero-card portrait-card paper"});
 
 		const heroPortrait = portraitCard.createDiv({ cls: "hero-portrait shadow" });
-		heroPortrait.style.backgroundImage = `url(${heroData?.avatar})`;
+		heroPortrait.style.backgroundImage = `url(${heroData.getAvatar()})`;
 
 		const bars = portraitCard.createDiv({cls: "progress-bars"});
 
@@ -122,6 +129,33 @@ export class HeroOverview extends DSAView {
 				this.leaf.detach();
 				this.plugin.viewOpener.openHeroListView();
 			}).open();
+		}
+
+		const updateOptolithButton = manageButtons.createEl("button", { text: "Optolith Datei Aktualisieren", cls: "button" });
+		updateOptolithButton.onclick = () => {
+			const fileInput = document.createElement('input');
+			fileInput.type = 'file';
+			fileInput.accept = '.json';
+			fileInput.style.display = 'none';
+
+			fileInput.addEventListener('change', async (event) => {
+				const target = event.target as HTMLInputElement;
+				if (!target.files || !target.files.length) return;
+
+				const file = target.files[0];
+				const fileText = await file.text();
+
+				try {
+					JSON.parse(fileText);
+					new Notice('File uploaded successfully!');
+					await this.plugin.heroManager.updateOptoDataSheet(heroId, fileText);
+					await this.onOpen();
+				} catch (error) {
+					new Notice('Invalid JSON file');
+				}
+			});
+
+			fileInput.click();
 		}
 
 	}

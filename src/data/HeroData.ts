@@ -1,4 +1,5 @@
 import exp from "node:constants";
+import {noAvatarImage} from "../assets/NoAvatarImage";
 
 export class RegisteredHero {
 	constructor(id: string, name: string) {
@@ -15,8 +16,9 @@ export class RegisteredHero {
 }
 
 export class Item {
-	name: string;
-	quantity: number;
+	fromThirdPartySoftware: boolean = false;
+	name: string = "";
+	quantity: number = 1;
 }
 
 export interface Race {
@@ -25,8 +27,6 @@ export interface Race {
 }
 
 export class HeroData {
-	id: string = '';
-
 	avatar: string = '';
 	name: string = 'Unknown Hero';
 	familyName: string = '';
@@ -64,6 +64,27 @@ export class HeroData {
 	movement: number = 0;
 
 	inventory: Item[] = [];
+
+	getAvatar() {
+		return this.avatar || noAvatarImage;
+	}
+
+	// Adds or overwrites an item in the inventory.
+	pushItem(item: Item) {
+		const existingItem = this.inventory.find(i => i.name === item.name);
+        if (existingItem) {
+			// overwrite the existing item with the new information
+			existingItem.name = item.name;
+			existingItem.quantity = item.quantity;
+			existingItem.fromThirdPartySoftware = item.fromThirdPartySoftware;
+        } else {
+            this.inventory.push(item);
+        }
+	}
+
+	removeItem(itemName: string) {
+		this.inventory = this.inventory.filter(i => i.name!== itemName);
+	}
 
 	static fromJson(jsonData: any): HeroData {
 		const dataSheet = new HeroData();

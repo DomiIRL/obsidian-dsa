@@ -21,7 +21,6 @@ export class ConfirmWarningModal extends Modal {
 		super(plugin.app);
 
 		this.setTitle(style.title);
-
 		this.contentEl.createEl("p", { text: style.description });
 
 		new Setting(this.contentEl)

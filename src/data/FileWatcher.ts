@@ -1,6 +1,6 @@
 import {Notice, TFile} from "obsidian";
 import DSAPlugin from "../../main";
-import {OptoDataSheet} from "./DataSheet";
+import {OptoDataSheet} from "./OptoDataSheet";
 
 export class FileWatcher {
     plugin: DSAPlugin;

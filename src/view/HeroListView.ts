@@ -53,7 +53,7 @@ export class HeroListView extends DSAView {
 
 			heroManager.getHeroData(hero.id).then(value => {
 				if (!value) return;
-				heroItem.style.backgroundImage = `url(${value.avatar})`;
+				heroItem.style.backgroundImage = `url(${value.getAvatar()})`;
 			});
 
 			const nameWrapper = heroItemWrapper.createDiv();

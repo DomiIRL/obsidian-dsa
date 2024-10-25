@@ -54,6 +54,7 @@ export class CreateHeroModal extends Modal {
 						try {
 							JSON.parse(fileText);
 							new Notice('File uploaded successfully!');
+							button.buttonEl.style.backgroundColor = '#49AF41'
 							optoDataSheetRaw = fileText;
 						} catch (error) {
 							new Notice('Invalid JSON file');

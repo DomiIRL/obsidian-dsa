@@ -2,6 +2,7 @@ import { IconName, ItemView, Notice, WorkspaceLeaf } from 'obsidian';
 import DSAPlugin from "../../main";
 import { exec, execSync } from 'child_process';
 import {CreateHeroModal} from "../modal/CreateHeroModal";
+import {bannerImage} from "../assets/BannerImage";
 
 export abstract class DSAView extends ItemView {
 
@@ -29,6 +30,7 @@ export abstract class DSAView extends ItemView {
 		const header = this.containerEl.createDiv({cls: "header" });
 
 		const banner = header.createDiv({ cls: "banner"});
+		banner.style.backgroundImage = `url(${bannerImage})`;
 
 		const navigationBox = header.createDiv({ cls: "navigation-box"});
 		const navigation = navigationBox.createEl("ul");
