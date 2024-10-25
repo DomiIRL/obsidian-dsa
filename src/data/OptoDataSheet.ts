@@ -138,9 +138,7 @@ export class OptoDataSheet {
 	calculateLifePoints(): number {
 		const ko = this.getAttributeById(ATTR_CONSTITUTION);
 		let baseValue = (this.getRace()?.lp || 0) + ko + ko;
-		baseValue += this.attr.lp;
-		baseValue -= this.attr.permanentLP.lost;
-		return baseValue;
+		return baseValue + this.attr.lp - this.attr.permanentLP.lost;
 	}
 
 	calculateArcaneEnergy(): number {
@@ -148,9 +146,7 @@ export class OptoDataSheet {
 			return 0;
 		}
 		let baseValue = this.getAttributeById(this.attr.attributeAdjustmentSelected) + 20;
-		baseValue -= this.attr.ae;
-		baseValue -= this.attr.permanentAE.lost + this.attr.permanentAE.redeemed;
-		return baseValue;
+		return baseValue + this.attr.ae - this.attr.permanentAE.lost + this.attr.permanentAE.redeemed;
 	}
 
 	calculateKarmaEnergy(): number {
@@ -158,9 +154,7 @@ export class OptoDataSheet {
 			return 0;
 		}
 		let baseValue = this.getAttributeById(this.attr.attributeAdjustmentSelected) + 20;
-		baseValue -= this.attr.kp;
-		baseValue -= this.attr.permanentKP.lost + this.attr.permanentKP.redeemed;
-		return baseValue;
+		return baseValue + this.attr.kp - this.attr.permanentKP.lost + this.attr.permanentKP.redeemed;
 	}
 
 	getAttributeById(id: string): number {
