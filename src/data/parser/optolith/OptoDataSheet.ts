@@ -208,14 +208,14 @@ export class OptoDataSheet {
 			const attrValue = this.getAttributeById(attrId);
 			if (attrValue !== undefined) {
 				// @ts-ignore
-				heroData[propName] = attrValue;
+				heroData.baseAttributes[propName] = attrValue;
 			}
 		}
 
 		// Calculating life points, arcane energy, and karma energy
-		heroData.lifePoints = this.calculateLifePoints();
-		heroData.arcaneEnergy = this.calculateArcaneEnergy();
-		heroData.karmaEnergy = this.calculateKarmaEnergy();
+		heroData.baseAttributes.lifePoints = this.calculateLifePoints();
+		heroData.baseAttributes.arcaneEnergy = this.calculateArcaneEnergy();
+		heroData.baseAttributes.karmaEnergy = this.calculateKarmaEnergy();
 
 		const manuallyAddedItems = Object.values(heroData.inventory).filter((item: any) =>!item.fromThirdPartySoftware);
 

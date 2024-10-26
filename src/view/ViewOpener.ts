@@ -2,7 +2,7 @@ import {PaneType, ViewState, Workspace, WorkspaceLeaf} from "obsidian";
 import {VIEW_HERO_LIST} from "./HeroListView";
 import DSAPlugin from "../../main";
 import {VIEW_HERO_OVERVIEW} from "./HeroOverview";
-import {VIEW_TOKENIZER} from "./TokenizerView";
+import {VIEW_TOKENIZER} from "./WebView";
 
 export class ViewOpener {
 

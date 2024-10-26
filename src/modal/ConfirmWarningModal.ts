@@ -27,7 +27,6 @@ export class ConfirmWarningModal extends Modal {
 			.addButton((btn) =>
 				btn
 					.setButtonText(style.cancelButtonText)
-					.setCta()
 					.onClick(() => {
 						this.close();
 					}))
@@ -40,7 +39,5 @@ export class ConfirmWarningModal extends Modal {
 						this.close();
 						onSubmit();
 					}));
-
-
 	}
 }

@@ -4,14 +4,17 @@ import DSAPlugin from "../../main";
 
 export const VIEW_TOKENIZER = 'tokenizer';
 
-export class TokenizerView extends DSAView {
+export class WebView extends DSAView {
 
-	constructor(leaf: WorkspaceLeaf, plugin: DSAPlugin) {
+	name: string;
+	url: string;
+
+	constructor(leaf: WorkspaceLeaf, plugin: DSAPlugin, name: string, url: string) {
 		super(leaf, plugin);
 	}
 
 	getTitle(): string {
-		return "Tokenizer";
+		return this.name;
 	}
 
 	getViewType(): string {
@@ -31,7 +34,7 @@ export class TokenizerView extends DSAView {
 		// Create an iframe to load the webpage
 		const iframe = container.createEl('iframe', {
 			attr: {
-				src: "https://rolladvantage.com/tokenstamp/",
+				src: this.url,
 				style: 'width: 100%; height: 100%; border: none;', // Ensure it fills the container
 			}
 		});

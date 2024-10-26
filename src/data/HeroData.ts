@@ -15,6 +15,20 @@ export class RegisteredHero {
 	name: string;
 }
 
+export enum RelationTypes {
+	file = "file",
+	web = "web",
+	hero = "hero",
+}
+
+export class RelationData {
+	uniqueId: string;
+	category: string = "";
+	displayName: string = "";
+	relationType: RelationTypes;
+	data: string;
+}
+
 export class Item {
 	fromThirdPartySoftware: boolean = false;
 	name: string = "";
@@ -46,6 +60,9 @@ export class Attributes {
 	karmaEnergy: number = 0;
 	enhancedKarmaEnergyRegeneration: number = 0;
 
+	armor: number = 0;
+	currentArmorLost: number = 0;
+
 	spirit: number = 0;
 	toughness: number = 0;
 	dodge: number = 0;
@@ -70,41 +87,16 @@ export class HeroData {
 	}
 
 	baseAttributes: Attributes = new Attributes();
-	
+
+	currentLifePointsLost: number = 0;
+	currentArcaneEnergyLost: number = 0;
+	currentKarmaEnergyLost: number = 0;
 
 	adventurePoints: number = 0;
 
-	courage: number = 8;
-	sagacity: number = 8;
-	intuition: number = 8;
-	charisma: number = 8;
-	dexterity: number = 8;
-	agility: number = 8;
-	constitution: number = 8;
-	strength: number = 8;
-
-	lifePoints: number = 0;
-	currentLifePointsLost: number = 0;
-	enhancedLifePointsRegeneration = 0;
-
-	arcaneEnergy: number = 0;
-	currentArcaneEnergyLost: number = 0;
-	enhancedArcaneEnergyRegeneration: number = 0;
-
-	karmaEnergy: number = 0;
-	currentKarmaEnergyLost: number = 0;
-	enhancedKarmaEnergyRegeneration: number = 0;
-
-	armor: number = 0;
-	currentArmorLost: number = 0;
-
-	spirit: number = 0;
-	toughness: number = 0;
-	dodge: number = 0;
-	initiative: number = 0;
-	movement: number = 0;
-
 	inventory: Item[] = [];
+
+	relations: RelationData[] = [];
 
 	avatar: string = '';
 

@@ -1,13 +1,12 @@
-import {Modal, Notice, Setting, ViewStateResult, WorkspaceLeaf} from 'obsidian';
+import {Notice, ViewStateResult, WorkspaceLeaf} from 'obsidian';
 import DSAPlugin from "../../main";
-import { DSAView } from "./DSAView";
-import {HeroData, Item, RegisteredHero} from "../data/HeroData";
-import {ATTR_CHARISMA, ATTR_DEXTERITY, ATTR_AGILITY, ATTR_INTUITION, ATTR_STRENGTH, ATTR_SAGACITY, ATTR_CONSTITUTION, ATTR_COURAGE, OptoDataSheet} from "../data/OptoDataSheet";
-import {ConfirmWarningModal, ConfirmModalStyle} from "../modal/ConfirmWarningModal";
-import {it} from "node:test";
+import {DSAView} from "./DSAView";
+import {HeroData, RegisteredHero, RelationData, RelationTypes} from "../data/HeroData";
+import {ConfirmModalStyle, ConfirmWarningModal} from "../modal/ConfirmWarningModal";
 import {EditItemModal} from "../modal/EditItemModal";
 import {HeroPointModalSettings, ModifyHeroPointModal} from "../modal/ModifyHeroPointModal";
 import {ModifyHeroModal} from "../modal/ModifyHeroModal";
+import {AddRelationModal} from "../modal/AddRelationModal";
 
 export const VIEW_HERO_OVERVIEW = 'hero-overview';
 
@@ -57,24 +56,65 @@ export class HeroOverview extends DSAView {
 
 		const heroPage = overview.createDiv({cls: "hero-page"});
 
+		const relationsCard = this.createPaperCard(heroPage);
+		relationsCard.addClasses([ "hero-card", "relations-card" ]);
+
+		const relationsByCategory = new Map<string, RelationData[]>();
+
+		for (let relation of heroData.relations) {
+			const category = relation.category;
+			if (relationsByCategory.has(category)) {
+				// @ts-ignore
+				relationsByCategory.get(category).push(relation);
+			} else {
+				relationsByCategory.set(category, [relation]);
+			}
+		}
+
+		for (let categoryName of relationsByCategory.keys()) {
+			const relations = relationsByCategory.get(categoryName);
+
+			if (!relations) continue;
+
+			const categoryElement = this.createLabel(relationsCard, categoryName);
+			categoryElement.addClass("relation-category");
+
+			relations.forEach(relation => {
+				const relationElement = categoryElement.createDiv({cls: "relation name button", text: relation.displayName});
+				relationElement.onclick = async () => {
+
+					if (relation.relationType == RelationTypes.file) {
+						const relationFile = await this.plugin.fileWatcher.getFile(`${this.plugin.heroManager.getHeroFolderPath(heroId)}/${relation.data}`);
+                        if (relationFile) {
+							await this.app.workspace.getLeaf(true).openFile(relationFile);
+                        } else {
+							new Notice("Die Referenzdatei wurde nicht gefunden.");
+						}
+					}
+				}
+			})
+		}
+
 		const leftCard = heroPage.createDiv({cls: "left-card"});
 
-		const attributesCard = leftCard.createDiv({cls: "hero-card attributes-card paper"});
+		const attributesCard = this.createPaperCard(leftCard);
+		attributesCard.addClasses([ "hero-card", "attributes-card" ]);
 
-		attributesCard.createEl("h1", { cls: "name", text: `${heroData.name || 'Unknown Hero'} ${heroData.title ? `"${heroData.title}"` : ''} ${heroData.familyName || ''} (${heroData.adventurePoints} AP)` });
+		attributesCard.createEl("h1", { cls: "hero-name", text: `${heroData.name || 'Unknown Hero'} ${heroData.title ? `"${heroData.title}"` : ''} ${heroData.familyName || ''} (${heroData.adventurePoints} AP)` });
 
 		const attributes = attributesCard.createDiv({cls: "attributes"});
-		this.createLabel(attributes, "MU").createDiv({cls: "attribute shadow mu", text: `${heroData.courage}`})
-		this.createLabel(attributes, "KL").createDiv({cls: "attribute shadow kl", text: `${heroData.sagacity}`})
-		this.createLabel(attributes, "IN").createDiv({cls: "attribute shadow in", text: `${heroData.intuition}`})
-		this.createLabel(attributes, "CH").createDiv({cls: "attribute shadow ch", text: `${heroData.charisma}`})
-		this.createLabel(attributes, "FF").createDiv({cls: "attribute shadow ff", text: `${heroData.dexterity}`})
-		this.createLabel(attributes, "GE").createDiv({cls: "attribute shadow ge", text: `${heroData.agility}`})
-		this.createLabel(attributes, "KO").createDiv({cls: "attribute shadow ko", text: `${heroData.constitution}`})
-		this.createLabel(attributes, "KK").createDiv({cls: "attribute shadow kk", text: `${heroData.strength}`})
+		this.createLabel(attributes, "MU").createDiv({cls: "attribute shadow mu", text: `${heroData.baseAttributes.courage}`})
+		this.createLabel(attributes, "KL").createDiv({cls: "attribute shadow kl", text: `${heroData.baseAttributes.sagacity}`})
+		this.createLabel(attributes, "IN").createDiv({cls: "attribute shadow in", text: `${heroData.baseAttributes.intuition}`})
+		this.createLabel(attributes, "CH").createDiv({cls: "attribute shadow ch", text: `${heroData.baseAttributes.charisma}`})
+		this.createLabel(attributes, "FF").createDiv({cls: "attribute shadow ff", text: `${heroData.baseAttributes.dexterity}`})
+		this.createLabel(attributes, "GE").createDiv({cls: "attribute shadow ge", text: `${heroData.baseAttributes.agility}`})
+		this.createLabel(attributes, "KO").createDiv({cls: "attribute shadow ko", text: `${heroData.baseAttributes.constitution}`})
+		this.createLabel(attributes, "KK").createDiv({cls: "attribute shadow kk", text: `${heroData.baseAttributes.strength}`})
 
 		// Inventory
-		const inventoryCard = leftCard.createDiv({cls: "hero-card inventory-card paper"});
+		const inventoryCard = this.createPaperCard(leftCard);
+		inventoryCard.addClasses([ "hero-card", "inventory-card" ])
 
 		const labelWrapper = inventoryCard.createDiv({cls: "inventory-label-wrapper"});
 		const inventory = this.createLabel(labelWrapper, "Inventar").createDiv({cls: "inventory "});
@@ -98,12 +138,13 @@ export class HeroOverview extends DSAView {
 			}).open();
 		}
 
-		const portraitCard = heroPage.createDiv({cls: "hero-card portrait-card paper"});
+		const portraitCard = this.createPaperCard(heroPage);
+		portraitCard.addClasses([ "hero-card", "portrait-card" ]);
 
 		const heroPortrait = portraitCard.createDiv({ cls: "hero-portrait shadow" });
 
-		heroPortrait.createDiv({ cls: "tape-section" });
-		heroPortrait.createDiv({ cls: "tape-section" });
+/*		heroPortrait.createDiv({ cls: "tape-section" });
+		heroPortrait.createDiv({ cls: "tape-section" });*/
 
 		heroPortrait.style.backgroundImage = `url(${heroData.getAvatar()})`;
 
@@ -112,10 +153,10 @@ export class HeroOverview extends DSAView {
 		this.createLabel(bars, "Lebensenergie").appendChild(this.createPointBar(["bg-health"], {
 			title: "Lebensenergie",
 			description: "Lebensenergie des Helden",
-			max: heroData.lifePoints,
+			max: heroData.baseAttributes.lifePoints,
 			currentLost: heroData.currentLifePointsLost,
 			onSubmit: (max, currentLost) => {
-				heroData.lifePoints = max;
+				heroData.baseAttributes.lifePoints = max;
 				heroData.currentLifePointsLost = currentLost;
 				this.plugin.heroManager.updateHeroData(heroId, heroData);
 				this.onOpen();
@@ -125,10 +166,10 @@ export class HeroOverview extends DSAView {
 		this.createLabel(bars, "Astralenergie").appendChild(this.createPointBar(["bg-astral"], {
 			title: "Astralenergie",
 			description: "Astralenergie des Helden",
-			max: heroData.arcaneEnergy,
+			max: heroData.baseAttributes.arcaneEnergy,
 			currentLost: heroData.currentArcaneEnergyLost,
 			onSubmit: (max, currentLost) => {
-				heroData.arcaneEnergy = max;
+				heroData.baseAttributes.arcaneEnergy = max;
 				heroData.currentArcaneEnergyLost = currentLost;
 				this.plugin.heroManager.updateHeroData(heroId, heroData);
 				this.onOpen();
@@ -139,10 +180,10 @@ export class HeroOverview extends DSAView {
 		this.createLabel(bars, "Karmaenergie").appendChild(this.createPointBar(["bg-karma"], {
 			title: "Karmaenergie",
 			description: "Karmaenergie des Helden",
-			max: heroData.karmaEnergy,
+			max: heroData.baseAttributes.karmaEnergy,
 			currentLost: heroData.currentKarmaEnergyLost,
 			onSubmit: (max, currentLost) => {
-				heroData.karmaEnergy = max;
+				heroData.baseAttributes.karmaEnergy = max;
 				heroData.currentKarmaEnergyLost = currentLost;
 				this.plugin.heroManager.updateHeroData(heroId, heroData);
 				this.onOpen();
@@ -152,11 +193,11 @@ export class HeroOverview extends DSAView {
 		this.createLabel(bars, "Rüstung").appendChild(this.createPointBar(["bg-armor"], {
 			title: "Rüstung",
 			description: "Rüstung des Helden",
-			max: heroData.armor,
-			currentLost: heroData.currentArmorLost,
+			max: heroData.baseAttributes.armor,
+			currentLost: heroData.baseAttributes.currentArmorLost,
 			onSubmit: (max, currentLost) => {
-				heroData.armor = max;
-				heroData.currentArmorLost = currentLost;
+				heroData.baseAttributes.armor = max;
+				heroData.baseAttributes.currentArmorLost = currentLost;
 				this.plugin.heroManager.updateHeroData(heroId, heroData);
 				this.onOpen();
 			}
@@ -213,6 +254,13 @@ export class HeroOverview extends DSAView {
 			});
 
 			fileInput.click();
+		}
+
+		const addRelationButton = manageButtons.createEl("button", { text: "Relation hinzufügen", cls: "button" });
+		addRelationButton.onclick = () => {
+			new AddRelationModal(this.plugin, heroId, () => {
+				this.onOpen();
+			}).open();
 		}
 
 	}

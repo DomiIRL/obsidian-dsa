@@ -171,4 +171,10 @@ export abstract class DSAView extends ItemView {
 		return parts[parts.length - 1]; // Get the last part which is the executable name
 	}
 
+	createPaperCard(parent: HTMLElement, ): HTMLDivElement {
+		const paperCard = parent.createDiv({ cls: "paper-texture" });
+/*		paperCard.createDiv({cls: "paper-stack"})*/
+        return paperCard;
+	}
+
 }

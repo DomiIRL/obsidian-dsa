@@ -54,7 +54,8 @@ export class EditItemModal extends Modal {
 
         if (!newItem) {
             buttonsSetting.addButton(component => {
-                component.setButtonText("Löschen")
+                component.setButtonText("Löschen");
+                component.setWarning();
                 component.onClick(async () => {
 
                     const heroData = await plugin.heroManager.getHeroData(heroId);
@@ -67,7 +68,8 @@ export class EditItemModal extends Modal {
             })
         }
         buttonsSetting.addButton(component => {
-            component.setButtonText("Übernehmen")
+            component.setButtonText("Übernehmen");
+            component.setCta();
             component.onClick(async () => {
 
                 if (modifiedItem.name.trim() === "" || modifiedItem.quantity <= 0) {
