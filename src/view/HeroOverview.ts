@@ -1,12 +1,13 @@
 import {Notice, ViewStateResult, WorkspaceLeaf} from 'obsidian';
 import DSAPlugin from "../../main";
 import {DSAView} from "./DSAView";
-import {HeroData, RegisteredHero, RelationData, RelationTypes} from "../data/HeroData";
+import {HeroData, RegisteredHero, RelationData, RelationViewType} from "../data/HeroData";
 import {ConfirmModalStyle, ConfirmWarningModal} from "../modal/ConfirmWarningModal";
 import {EditItemModal} from "../modal/EditItemModal";
 import {HeroPointModalSettings, ModifyHeroPointModal} from "../modal/ModifyHeroPointModal";
 import {ModifyHeroModal} from "../modal/ModifyHeroModal";
 import {AddRelationModal} from "../modal/AddRelationModal";
+import {createRelationEmbed, handleRelationOpen} from "../data/relation/RelationOpener";
 
 export const VIEW_HERO_OVERVIEW = 'hero-overview';
 
@@ -56,45 +57,6 @@ export class HeroOverview extends DSAView {
 
 		const heroPage = overview.createDiv({cls: "hero-page"});
 
-		const relationsCard = this.createPaperCard(heroPage);
-		relationsCard.addClasses([ "hero-card", "relations-card" ]);
-
-		const relationsByCategory = new Map<string, RelationData[]>();
-
-		for (let relation of heroData.relations) {
-			const category = relation.category;
-			if (relationsByCategory.has(category)) {
-				// @ts-ignore
-				relationsByCategory.get(category).push(relation);
-			} else {
-				relationsByCategory.set(category, [relation]);
-			}
-		}
-
-		for (let categoryName of relationsByCategory.keys()) {
-			const relations = relationsByCategory.get(categoryName);
-
-			if (!relations) continue;
-
-			const categoryElement = this.createLabel(relationsCard, categoryName);
-			categoryElement.addClass("relation-category");
-
-			relations.forEach(relation => {
-				const relationElement = categoryElement.createDiv({cls: "relation name button", text: relation.displayName});
-				relationElement.onclick = async () => {
-
-					if (relation.relationType == RelationTypes.file) {
-						const relationFile = await this.plugin.fileWatcher.getFile(`${this.plugin.heroManager.getHeroFolderPath(heroId)}/${relation.data}`);
-                        if (relationFile) {
-							await this.app.workspace.getLeaf(true).openFile(relationFile);
-                        } else {
-							new Notice("Die Referenzdatei wurde nicht gefunden.");
-						}
-					}
-				}
-			})
-		}
-
 		const leftCard = heroPage.createDiv({cls: "left-card"});
 
 		const attributesCard = this.createPaperCard(leftCard);
@@ -117,7 +79,9 @@ export class HeroOverview extends DSAView {
 		inventoryCard.addClasses([ "hero-card", "inventory-card" ])
 
 		const labelWrapper = inventoryCard.createDiv({cls: "inventory-label-wrapper"});
-		const inventory = this.createLabel(labelWrapper, "Inventar").createDiv({cls: "inventory "});
+		const inventoryContent = this.createLabel(labelWrapper, "Inventar");
+		inventoryContent.addClass("inventory-content")
+		const inventory = inventoryContent.createDiv({cls: "inventory "});
 
 		const belongings = heroData.inventory;
 		belongings.forEach(item => {
@@ -129,7 +93,6 @@ export class HeroOverview extends DSAView {
 			}
 		})
 
-		// add add button as item
 		const addItemButton = inventory.createDiv({  cls: "item" });
 		addItemButton.createDiv({ text: "+", cls: "add-item" })
 		addItemButton.onclick = async () => {
@@ -138,7 +101,60 @@ export class HeroOverview extends DSAView {
 			}).open();
 		}
 
-		const portraitCard = this.createPaperCard(heroPage);
+		const coins = inventoryContent.createDiv({ cls: "coins" });
+		coins.createDiv({ cls: "coin ducats", text: `${heroData.ducats}` });
+		coins.createDiv({ cls: "coin silver", text: `${heroData.silver}` });
+		coins.createDiv({ cls: "coin heller", text: `${heroData.heller}` });
+		coins.createDiv({ cls: "coin crosser", text: `${heroData.crosser}` });
+
+
+		// -- Right Side
+		const rightCard = heroPage.createDiv({cls: "right-card"});
+
+		// -- Relations
+
+		if (heroData.relations.some(value => value.relationViewType == RelationViewType.button || value.relationViewType == RelationViewType.both)) {
+			const relationsByCategory = new Map<string, RelationData[]>();
+			for (let relation of heroData.relations) {
+				const category = relation.category;
+				if (relationsByCategory.has(category)) {
+					// @ts-ignore
+					relationsByCategory.get(category).push(relation);
+				} else {
+					relationsByCategory.set(category, [relation]);
+				}
+			}
+
+			const relationsCard = this.createPaperCard(rightCard);
+			relationsCard.addClasses([ "hero-card", "relations-card" ]);
+
+			for (let categoryName of relationsByCategory.keys()) {
+				const relations = relationsByCategory.get(categoryName);
+
+				if (!relations) continue;
+
+				if (!relations.some(value => value.relationViewType == RelationViewType.button || value.relationViewType == RelationViewType.both)) {
+					continue;
+				}
+
+				const categoryElement = this.createLabel(relationsCard, categoryName);
+				categoryElement.addClass("relation-category");
+
+				relations.forEach(relation => {
+
+					if (!(relation.relationViewType == RelationViewType.button || relation.relationViewType == RelationViewType.both)) {
+						return;
+					}
+
+					const relationElement = categoryElement.createDiv({cls: "relation name button", text: relation.displayName});
+					relationElement.onclick = async () => {
+						await handleRelationOpen(this.plugin, heroId, relation);
+					}
+				})
+			}
+		}
+
+		const portraitCard = this.createPaperCard(rightCard);
 		portraitCard.addClasses([ "hero-card", "portrait-card" ]);
 
 		const heroPortrait = portraitCard.createDiv({ cls: "hero-portrait shadow" });
@@ -203,6 +219,50 @@ export class HeroOverview extends DSAView {
 			}
 		}))
 
+		// -- START RELATION PAGES
+
+/*
+		const relationsByCategory = new Map<string, RelationData[]>();
+		for (let relation of heroData.relations) {
+			const category = relation.category;
+			if (relationsByCategory.has(category)) {
+				// @ts-ignore
+				relationsByCategory.get(category).push(relation);
+			} else {
+				relationsByCategory.set(category, [relation]);
+			}
+		}
+
+		for (let categoryName of relationsByCategory.keys()) {
+			const relations = relationsByCategory.get(categoryName);
+			if (!relations) continue;
+
+			if (!relations.some(value => value.relationViewType == RelationViewType.card || value.relationViewType == RelationViewType.both)) {
+				continue;
+			}
+
+			overview.createEl('h1', { text: categoryName });
+
+			const relationCards = overview.createDiv({cls: "relation-cards"});
+
+			relations.forEach(relation => {
+
+				if (!(relation.relationViewType == RelationViewType.card || relation.relationViewType == RelationViewType.both)) {
+					return;
+				}
+
+				const relationCard = this.createPaperCard(relationCards);
+				relationCard.addClass("relation-card")
+				const label = this.createLabel(relationCard, relation.displayName);
+				const content = relationCard.createDiv({cls: "relation-card-content"});
+				createRelationEmbed(this.plugin, heroId, content, relation);
+			})
+		}
+*/
+
+
+		// -- END CARDS
+
 		overview.createEl('hr');
 
 		const manageButtons = overview.createDiv({cls: "manage-buttons"});
@@ -256,7 +316,7 @@ export class HeroOverview extends DSAView {
 			fileInput.click();
 		}
 
-		const addRelationButton = manageButtons.createEl("button", { text: "Relation hinzufügen", cls: "button" });
+		const addRelationButton = manageButtons.createEl("button", { text: "Beziehung hinzufügen", cls: "button" });
 		addRelationButton.onclick = () => {
 			new AddRelationModal(this.plugin, heroId, () => {
 				this.onOpen();
@@ -312,10 +372,10 @@ export class HeroOverview extends DSAView {
 				typeof state.id === "string"
 			) {
 				this.id = state.id;
-				this.onOpen();
+				await this.onOpen();
 			}
 		}
-		super.setState(state, result);
+		await super.setState(state, result);
 	}
 
 	async onClose() {

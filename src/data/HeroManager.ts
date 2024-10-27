@@ -52,7 +52,6 @@ export class HeroManager {
 			this.plugin.saveSettings().then();
 		}
 
-		this.deleteHeroFolder(id).then();
 	}
 
 	createHeroFolders() {

@@ -3,6 +3,7 @@ import DSAPlugin from "../../main";
 import { exec, execSync } from 'child_process';
 import {CreateHeroModal} from "../modal/CreateHeroModal";
 import {bannerImage} from "../assets/BannerImage";
+import {VIEW_WEB} from "./WebView";
 
 export abstract class DSAView extends ItemView {
 
@@ -63,9 +64,13 @@ export abstract class DSAView extends ItemView {
 			this.openOptolith();
 		};
 
+		navigation.createEl("li").createEl("button", { text: "Wiki" }).onclick = () => {
+			this.plugin.viewOpener.openWebView("Wiki", "https://dsa.ulisses-regelwiki.de/")
+		};
 
-		navigation.createEl("li").createEl("button", { text: "Tokenizer" }).onclick = () => {
-			this.plugin.viewOpener.openTokenizerView();
+
+		navigation.createEl("li").createEl("button", { text: "Dice Roller" }).onclick = () => {
+			this.plugin.viewOpener.openWebView("Dice Roller", "https://rolladvantage.com/diceroller/")
 		};
 
 		header.createEl('h1', {text: this.getTitle()});

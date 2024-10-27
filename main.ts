@@ -5,7 +5,7 @@ import {RegisteredHero} from "./src/data/HeroData";
 import {ViewOpener} from "./src/view/ViewOpener";
 import {HeroOverview, VIEW_HERO_OVERVIEW} from "./src/view/HeroOverview";
 import {FileWatcher} from "./src/data/FileWatcher";
-import {VIEW_TOKENIZER, WebView} from "./src/view/WebView";
+import {VIEW_WEB, WebView} from "./src/view/WebView";
 
 // Remember to rename these classes and interfaces!
 
@@ -79,9 +79,9 @@ export default class DSAPlugin extends Plugin {
 		)
 
 		this.registerView(
-			VIEW_TOKENIZER,
+			VIEW_WEB,
 			(leaf) => {
-				return new WebView(leaf, this, "Tokenizer", "https://rolladvantage.com/tokenstamp/")
+				return new WebView(leaf, this)
 			},
 		)
 

@@ -1,6 +1,9 @@
 .dsa-view {
 	position: relative;
 	overflow-y: scroll;
+	color: black;
+	container-type: inline-size;
+	container-name: dsa-view;
 }
 
 .dsa-view .button {
@@ -116,7 +119,7 @@
 }
 
 .dsa-view .header .navigation-box ul li button {
-	width: 100px;
+	min-width: 100px;
 	height: 40px;
 	background-color: #624B3B;
 	border-radius: 30px;
@@ -127,6 +130,12 @@
 .dsa-view .header .navigation-box ul li button:hover {
 	transform: scale(1.05);
 }
+
+.dsa-view h1 {
+	color: white;
+}
+
+/*-- END HEADER */
 
 .dsa-view .list-wrapper {
 	display: flex;
@@ -187,9 +196,39 @@
 	align-items: center;
 }
 
+.dsa-view .relation-cards {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.dsa-view .relation-card {
+	padding: 20px;
+	aspect-ratio: 16/9;
+	min-height: 500px;
+	display: flex;
+	flex-direction: column;
+}
+
+.dsa-view .relation-card .relation-card-content {
+	flex-grow: 1;
+	/*clip-path: polygon(3% 0, 7% 1%, 11% 0%, 16% 2%, 20% 0, 23% 2%, 28% 2%, 32% 1%, 35% 1%, 39% 3%, 41% 1%, 45% 0%, 47% 2%, 50% 2%, 53% 0, 58% 2%, 60% 2%, 63% 1%, 65% 0%, 67% 2%, 69% 2%, 73% 1%, 76% 1%, 79% 0, 82% 1%, 85% 0, 87% 1%, 89% 0, 92% 1%, 96% 0, 98% 3%, 99% 3%, 99% 6%, 100% 11%, 98% 15%, 100% 21%, 99% 28%, 100% 32%, 99% 35%, 99% 40%, 100% 43%, 99% 48%, 100% 53%, 100% 57%, 99% 60%, 100% 64%, 100% 68%, 99% 72%, 100% 75%, 100% 79%, 99% 83%, 100% 86%, 100% 90%, 99% 94%, 99% 98%, 95% 99%, 92% 99%, 89% 100%, 86% 99%, 83% 100%, 77% 99%, 72% 100%, 66% 98%, 62% 100%, 59% 99%, 54% 99%, 49% 100%, 46% 98%, 43% 100%, 40% 98%, 38% 100%, 35% 99%, 31% 100%, 28% 99%, 25% 99%, 22% 100%, 19% 99%, 16% 100%, 13% 99%, 10% 99%, 7% 100%, 4% 99%, 2% 97%, 1% 97%, 0% 94%, 1% 89%, 0% 84%, 1% 81%, 0 76%, 0 71%, 1% 66%, 0% 64%, 0% 61%, 0% 59%, 1% 54%, 0% 49%, 1% 45%, 0% 40%, 1% 37%, 0% 34%, 1% 29%, 0% 23%, 2% 20%, 1% 17%, 1% 13%, 0 10%, 1% 6%, 1% 3%);
+*/
+}
+
+.dsa-view .relation-card .relation-card-content iframe {
+	width: 100%;
+	height: 100%;
+	border: none;
+}
+
+.dsa-view .relation-card .relation-card-content img {
+}
+
 .dsa-view .hero-overview .manage-buttons {
 	display: flex;
     flex-direction: row;
+	flex-wrap: wrap;
     gap: 20px;
 }
 
@@ -212,19 +251,81 @@
 	flex-direction: row;
 	gap: 30px;
 	justify-content: center;
+
+}
+
+@container dsa-view (max-width: 1560px) {
+	.dsa-view .hero-page {
+		flex-direction: column !important;
+		flex-wrap: nowrap !important;;
+	}
+
+	.dsa-view .right-card .portrait-card {
+		flex-direction: row !important;
+	}
+
+	.dsa-view .right-card .relations-card {
+		flex-direction: row !important;
+		flex-wrap: wrap !important;
+	}
+
+	.dsa-view .right-card .progress-bars {
+		display: grid !important;
+		grid-template-columns: repeat(2, 1fr);
+		flex-grow: 1;
+	}
+
+	.dsa-view .right-card .progress-bars {
+		display: grid !important;
+		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+		flex-grow: 1;
+	}
+
+	.dsa-view .right-card .hero-portrait {
+		min-width: 300px;
+	}
+}
+
+@container dsa-view (max-width: 850px) {
+	.dsa-view .right-card .portrait-card {
+		flex-direction: column !important;
+		justify-content: center;
+		align-items: center;
+	}
+}
+
+
+.dsa-view .hero-overview .hero-page > * {
+	flex-basis: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.dsa-view .hero-overview .hero-page > * > * {
+}
+
+.dsa-view .hero-overview .left-card {
+	flex-grow: 3;
+	/*min-width: clamp(100px, 70vw, 800px);*/
+}
+
+.dsa-view .hero-overview .right-card {
+	flex-grow: 0;
+	/*min-width: clamp(100px, 70vw, 300px);*/
 }
 
 .dsa-view .hero-overview .hero-card {
 	padding: 40px;
 	color: black;
-	min-width: min(100%, 300px);
+	flex-grow: 1;
 }
 
 .dsa-view .hero-overview {
 	display: flex;
     flex-direction: column;
 	justify-content: flex-start;
-	gap: 40px;
+	gap: 20px;
 	padding: 0 10% 40px 10%;
 }
 
@@ -236,11 +337,9 @@
 }
 
 .dsa-view .hero-overview .relations-card {
-
-}
-
-.dsa-view .hero-overview .relations-card .relation {
-
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
 }
 
 .dsa-view .hero-overview .relations-card .relation .labeled-text {
@@ -265,16 +364,7 @@
 	color: var(--interactive-hover)
 }
 
-.dsa-view .hero-overview .left-card {
-	flex-grow: 3;
-	flex-basis: 0;
-	display: flex;
-	flex-direction: column;
-	gap: 2rem;
-}
-
 .dsa-view .hero-overview .attributes-card {
-	flex-grow: 1;
     flex-basis: 0;
 	display: flex;
 	flex-direction: column;
@@ -282,7 +372,6 @@
 }
 
 .dsa-view .hero-overview .inventory-card {
-	flex-grow: 1;
 	flex-basis: 0;
 }
 
@@ -293,6 +382,10 @@
     gap: 20px;
 	justify-content: center;
 	flex-wrap: wrap;
+}
+
+.dsa-view .hero-overview .attributes .labeled-element {
+
 }
 
 .dsa-view .hero-overview .attributes .labeled-text {
@@ -398,15 +491,13 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-	flex-grow: 1;
-	flex-basis: 0;
 	padding: 45px
 }
 
 .dsa-view .hero-overview .hero-portrait {
 	position: relative;
-	width: 100%;
-	aspect-ratio: 1;
+	width: 300px;
+	height: 300px;
 	background-size: cover;
 	clip-path: polygon(3% 0, 7% 1%, 11% 0%, 16% 2%, 20% 0, 23% 2%, 28% 2%, 32% 1%, 35% 1%, 39% 3%, 41% 1%, 45% 0%, 47% 2%, 50% 2%, 53% 0, 58% 2%, 60% 2%, 63% 1%, 65% 0%, 67% 2%, 69% 2%, 73% 1%, 76% 1%, 79% 0, 82% 1%, 85% 0, 87% 1%, 89% 0, 92% 1%, 96% 0, 98% 3%, 99% 3%, 99% 6%, 100% 11%, 98% 15%, 100% 21%, 99% 28%, 100% 32%, 99% 35%, 99% 40%, 100% 43%, 99% 48%, 100% 53%, 100% 57%, 99% 60%, 100% 64%, 100% 68%, 99% 72%, 100% 75%, 100% 79%, 99% 83%, 100% 86%, 100% 90%, 99% 94%, 99% 98%, 95% 99%, 92% 99%, 89% 100%, 86% 99%, 83% 100%, 77% 99%, 72% 100%, 66% 98%, 62% 100%, 59% 99%, 54% 99%, 49% 100%, 46% 98%, 43% 100%, 40% 98%, 38% 100%, 35% 99%, 31% 100%, 28% 99%, 25% 99%, 22% 100%, 19% 99%, 16% 100%, 13% 99%, 10% 99%, 7% 100%, 4% 99%, 2% 97%, 1% 97%, 0% 94%, 1% 89%, 0% 84%, 1% 81%, 0 76%, 0 71%, 1% 66%, 0% 64%, 0% 61%, 0% 59%, 1% 54%, 0% 49%, 1% 45%, 0% 40%, 1% 37%, 0% 34%, 1% 29%, 0% 23%, 2% 20%, 1% 17%, 1% 13%, 0 10%, 1% 6%, 1% 3%);
 	background-image: url(data:image/png;base64,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);
@@ -415,7 +506,7 @@
 .dsa-view .hero-overview .progress-bars {
 	display: flex;
 	flex-direction: column;
-	gap: 20px;
+	gap: 10px;
 }
 
 .dsa-view .progress {

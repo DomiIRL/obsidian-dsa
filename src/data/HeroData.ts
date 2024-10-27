@@ -15,17 +15,24 @@ export class RegisteredHero {
 	name: string;
 }
 
-export enum RelationTypes {
+export enum RelationType {
 	file = "file",
 	web = "web",
 	hero = "hero",
+}
+
+export enum RelationViewType {
+	button = "button",
+	card = "card",
+	both = "both"
 }
 
 export class RelationData {
 	uniqueId: string;
 	category: string = "";
 	displayName: string = "";
-	relationType: RelationTypes;
+	relationType: RelationType;
+	relationViewType: RelationViewType;
 	data: string;
 }
 
@@ -85,6 +92,11 @@ export class HeroData {
 		name: 'Unknown',
         lp: 0,
 	}
+
+	ducats: number = 0;
+	silver: number = 0;
+	heller: number = 0;
+	crosser: number = 0;
 
 	baseAttributes: Attributes = new Attributes();
 

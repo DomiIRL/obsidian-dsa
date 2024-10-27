@@ -2,7 +2,7 @@ import {PaneType, ViewState, Workspace, WorkspaceLeaf} from "obsidian";
 import {VIEW_HERO_LIST} from "./HeroListView";
 import DSAPlugin from "../../main";
 import {VIEW_HERO_OVERVIEW} from "./HeroOverview";
-import {VIEW_TOKENIZER} from "./WebView";
+import {VIEW_WEB} from "./WebView";
 
 export class ViewOpener {
 
@@ -12,16 +12,16 @@ export class ViewOpener {
 		this.plugin = plugin;
 	}
 
-	openTokenizerView() {
-		this.openOrRevealView(VIEW_TOKENIZER);
+	openWebView(name: string, url: string) {
+		this.openView(VIEW_WEB, true, { name: name, url: url }).then();
 	}
 
 	openHeroListView() {
-		this.openOrRevealView(VIEW_HERO_LIST);
+		this.openOrRevealView(VIEW_HERO_LIST).then();
 	}
 
 	openHeroOverview(id: string) {
-		this.openView(VIEW_HERO_OVERVIEW, true, { id });
+		this.openView(VIEW_HERO_OVERVIEW, true, { id }).then();
 	}
 
 	async openOrRevealView(type: ViewState["type"]) {
